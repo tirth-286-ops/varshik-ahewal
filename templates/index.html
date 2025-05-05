@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Data</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    td {
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    .section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h3{
+      margin: 0;
+    }
+    button {
+      padding: 8px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      background-color: rgb(33, 191, 211);
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: rgb(28, 162, 180);
+    }
+    select {
+      padding: 5px;
+      font-size: 11px;
+    }
+    .year-selection {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Year Selection Form -->
+  <div class="year-selection">
+    <form method="get">
+      <label for="year">Select Year:</label>
+      <select name="year" id="year" onchange="this.form.submit()">
+        <option value="">-- Select Year --</option>
+        {% for year in years %}
+          <option value="{{ year.year }}" {% if year.year == selected_year %}selected{% endif %}>{{ year.year }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  <table>
+    <tr>
+      <th>No.</th>
+      <th>Staff Data</th>
+      <th>Action</th>
+    </tr>
+
+    <tr>
+      <td>1</td>
+      <td>
+        <div class="section">
+          <h3>Annual Report Data ({{ selected_year }})</h3>
+      </div>
+      </td>
+      <td>
+          <!-- Word Download Button -->
+          <form action="{% url 'download' %}" method="get">
+              <input type="hidden" name="year" value="{{ selected_year }}">
+              <input type="hidden" name="type" value="word">  <!-- Specify Word format -->
+              <button type="submit">Download Word File</button>
+          </form>
+      <br><br>
+
+          <!-- PDF Download Button -->
+          <form action="{% url 'generate_pdf' %}" method="get">
+            <input type="hidden" name="year" value="{{ selected_year }}">
+            <input type="hidden" name="type" value="pdf">
+            <button type="submit">Download PDF File</button>
+        </form>
+      </td>
+      </tr>
+      
+    
+    <tr>
+      <td>2</td>
+      <td>
+        <div class="section">
+          <h3>AR Number of Non-Teaching Staff ({{ selected_year }})</h3>
+        </div>
+      </td>
+      <td>
+        <form action="{% url 'export_to_excel' %}" method="get">
+          <input type="hidden" name="year" value="{{ selected_year }}">
+          <button type="submit">Download Excel File</button>
+        </form>
+      </td>
+    </tr>
+
+    <tr>
+      <td>3</td>
+      <td>
+        <div class="section">
+          <h3>AR Number of Teaching Staff ({{ selected_year }})</h3>
+        </div>
+      </td>
+      <td>
+        <form action="{% url 'teching' %}" method="get">
+          <input type="hidden" name="year" value="{{ selected_year }}">
+          <button type="submit">Download Excel File</button>
+        </form>
+      </td>
+    </tr>
+
+    <tr>
+      <td>4</td>
+      <td>
+        <div class="section">
+          <h3>AR Ph.D Student Data ({{ selected_year }})</h3>
+        </div>
+      </td>
+      <td>
+        <form action="{% url 'PhD' %}" method="get">
+          <input type="hidden" name="year" value="{{ selected_year }}">
+          <button type="submit">Download Excel File</button>
+        </form>
+      </td>
+    </tr>
+
+    <tr>
+      <td>5</td>
+      <td>
+        <div class="section">
+          <h3>AR Result Data ({{ selected_year }})</h3>
+        </div>
+      </td>
+      <td>
+        <form action="{% url 'export2' %}" method="get">
+          <input type="hidden" name="year" value="{{ selected_year }}">
+          <button type="submit">Download Excel File</button>
+        </form>
+      </td>
+    </tr>
+
+    <tr>
+      <td>6</td>
+      <td>
+        <div class="section">
+          <h3>AR Student Data ({{ selected_year }})</h3>
+        </div>
+      </td>
+      <td>
+        <form action="{% url 'export' %}" method="get">
+          <input type="hidden" name="year" value="{{ selected_year }}">
+          <button type="submit">Download Excel File</button>
+        </form>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
