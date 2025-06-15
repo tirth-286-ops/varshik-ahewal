@@ -1,0 +1,336 @@
+<!-- templates/staff_dashboard.html -->
+  <style>
+        .user-info {
+            background-color: #f0f0f0;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .user-info h2 {
+            margin: 0;
+        }
+        .data-section {
+            margin-bottom: 30px;
+        }
+        /* Generic button reset + base */
+        .btn {
+        display: inline-block;
+        padding: 10px 10px;
+        margin-right: 15px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 0.9em;
+        font-weight: 500;
+        color: #fff;
+          gap: 10px; 
+        }
+
+        /* Specific colors */
+        .btn-edit {
+        background-color: #1ab2c6;   /* Bootstrap’s warning/yellow */
+        }
+        .btn-edit:hover {
+        background-color: #1ab2c6;
+        }
+
+        .btn-delete {
+        background-color: #dc3545;   /* Bootstrap’s danger/red */
+        }
+        .btn-delete:hover {
+        background-color: #c82333;
+        }
+
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                margin: 0;
+                            background: linear-gradient(135deg, #7ebbc5 0%, #ffffff 100%);
+
+            }
+
+        .sidebar {
+            width: 220px;
+            background-color: #34a2ae;
+            padding: 20px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar a {
+            display: block;
+            margin-bottom: 15px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .sidebar a:hover {
+            color: #fff;
+        }
+        .sidebar a:active {
+            border: 1px solid white;
+            background-color:white;
+            color: #000; 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            padding: 4px; 
+            border-radius: 4px;
+        }
+
+        .content {
+            margin-left: 240px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .header-buttons a {
+            margin-left: 10px;
+            background-color: #1ba2b7;
+            color: white;
+            padding: 8px 14px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .header-buttons a.logout {
+            background-color: #1ba2b7;
+        }
+
+        h1, h2 {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #1a1919;
+        }
+
+        th {
+            background-color: #dcd3d3;
+        }
+
+        .actions a {
+            margin-right: 10px;
+        }
+   .add-button {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    display: inline-block;
+    background-color: #1ba2b7;
+    color: white;
+    padding: 6px 12px;
+    text-decoration: none;
+    border-radius: 4px;
+    float: right;
+    position: relative;
+    font-weight: bold;
+}
+
+.add-button::before {
+    content: "+ "; /* plus sign with a space */
+    font-weight: bold;
+}
+
+
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+        .project-name {
+  font-size: 50px;
+  font-weight: bolder;
+  
+}
+h2
+{
+    text-align:left;
+    font-size: 250%;
+
+}
+      
+    </style>
+    <script>
+        function showSection(sectionId) {
+            var sections = document.getElementsByClassName("section");
+            for (var i = 0; i < sections.length; i++) {
+                sections[i].classList.remove("active");
+            }
+            document.getElementById(sectionId).classList.add("active");
+        }
+
+        window.onload = function () {
+            showSection('teacher_info');
+        };
+        
+    </script>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <a href="javascript:void(0);" onclick="showSection('teacher_info')">Teacher Info</a>
+    <a href="javascript:void(0);" onclick="showSection('teacher_pub')">Publications</a>
+    <a href="javascript:void(0);" onclick="showSection('research')">Research Projects</a>
+    <a href="javascript:void(0);" onclick="showSection('notes')">Special Notes(વિશેષ નોંધ)</a>
+    <a href="javascript:void(0);" onclick="showSection('specialpro')">Specialproject(વર્ષ દરમ્યાન ભવનમાં કરેલા વિશિષ્ટ પ્રયોગો-પ્રોજેક્ટો વિષયક માહિતી સંક્ષેપમા)</a>
+    <a href="javascript:void(0);" onclick="showSection('special')">Special(વર્ષ દરમ્યાન ભવનમાં રમત-ગમત/યુવક મહોત્સવ /એન.એસ.એસ. રાજ્ય/રાષ્ટ્રીય કક્ષાએ નોંધપાત્ર વિશિષ્ટસન્માન/પારિતોષિક મેળવ્યું હોય તો તેની સંક્ષિપ્ત વિગતો)</a>
+</div>
+
+<!-- Content -->
+<div class="content">
+  <center><div class="project-name">Application Of Varshik Ahewal</div></center>
+
+    <div class="header-buttons">
+        <a href="{% url 'index' %}">Back to Website</a>
+        <a href="{% url 'logout' %}" class="logout">Logout</a>
+    </div>
+  <span style="position: absolute; right: 10px; top:150; color: #333; font-weight: bold;font-size: 180%;">
+          Hello, {{ user.first_name }} {{ user.last_name }}
+    </span>
+    <center><h1> Faculty Dashboard</h1></center>
+
+
+<!-- Teacher Information Section -->
+<div id="teacher_info" class="section">
+    <h2>Table Name:- Teacher Info</h2>
+    <a href="{% url 'add_teacher_information' %}" class="add-button">Add Teacher Info</a>
+    <table>
+        <tr><th>Teacher Name</th><th>Conference</th><th>Location & Date</th><th>Paper Title</th><th>Action</th></tr>
+        {% for info in teacher_info %}
+        <tr>
+            <td>{{ info.teacher_name }}</td>
+            <td>{{ info.conference }}</td>
+            <td>{{ info.location_date }}</td>
+            <td>{{ info.paper_title }}</td>
+            <td class="actions">
+                <a href="{% url 'edit_teacher_information' info.pk %}" class="btn btn-edit">Edit</a>
+                <a href="{% url 'delete_teacher_information' info.pk %}" class="btn btn-delete"
+                   onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- Teacher Publications Section -->
+<div id="teacher_pub" class="section">
+    <h2>Table Name:- Teacher Publications</h2>
+    <a href="{% url 'add_teacher_publication' %}" class="add-button">Add Teacher Publication</a>
+    <table>
+        <tr><th>Serial Number</th><th>Teacher Name</th><th>Publication Title</th><th>Publisher Details</th><th>Action</th></tr>
+        {% for publication in teacher_publications %}
+        <tr>
+            <td>{{ publication.serial_number }}</td>
+            <td>{{ publication.teacher_name }}</td>
+            <td>{{ publication.publication_title }}</td>
+            <td>{{ publication.publisher_details }}</td>
+            <td class="actions">
+                <a href="{% url 'edit_teacher_publication' publication.pk %}" class="btn btn-edit">Edit</a>
+                <a href="{% url 'delete_teacher_publication' publication.pk %}" class="btn btn-delete"
+                   onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- Research Projects Section -->
+<div id="research" class="section">
+    <h2>Table Name:- Research Projects</h2>
+    <a href="{% url 'add_research_project' %}" class="add-button">Add Research Project</a>
+    <table>
+        <tr><th>Serial Number</th><th>Teacher Name</th><th>Project Title</th><th>Funding Agency</th><th>Approved Amount</th><th>Action</th></tr>
+        {% for project in research_projects %}
+        <tr>
+            <td>{{ project.serial_number }}</td>
+            <td>{{ project.teacher_name }}</td>
+            <td>{{ project.research_project_title }}</td>
+            <td>{{ project.funding_agency }}</td>
+            <td>{{ project.approved_amount }}</td>
+            <td class="actions">
+                <a href="{% url 'edit_research_project' project.pk %}" class="btn btn-edit">Edit</a>
+                <a href="{% url 'delete_research_project' project.pk %}" class="btn btn-delete"
+                   onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- Special Notes Section -->
+<div id="notes" class="section">
+    <h2>Table Name:- Special Notes (વિશેષ નોંધ)</h2>
+    <a href="{% url 'add_special_note' %}" class="add-button">Add વિશેષ નોંધ</a>
+    <table>
+        <tr><th>Note</th><th>Displayed</th><th>Action</th></tr>
+        {% for note in special_notes %}
+        <tr>
+            <td>{{ note.note }}</td>
+            <td>{{ note.is_displayed }}</td>
+            <td class="actions">
+                <a href="{% url 'edit_special_note' note.pk %}" class="btn btn-edit">Edit</a>
+                <a href="{% url 'delete_special_note' note.pk %}" class="btn btn-delete"
+                   onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- Specialpro Section -->
+<div id="specialpro" class="section">
+    <h2>Table Name:- Special project (વર્ષ દરમ્યાન ભવનમાં કરેલા વિશિષ્ટ પ્રયોગો-પ્રોજેક્ટો)</h2>
+    <a href="{% url 'add_specialpro' %}" class="add-button">Add વિશિષ્ટ પ્રયોગો-પ્રોજેક્ટો</a>
+    <table>
+        <tr><th>Note</th><th>Displayed</th><th>Action</th></tr>
+        {% for pro in specialpros %}
+        <tr>
+            <td>{{ pro.note }}</td>
+            <td>{{ pro.is_displayed }}</td>
+            <td class="actions">
+                <a href="{% url 'edit_specialpro' pro.pk %}" class="btn btn-edit">Edit</a>
+                <a href="{% url 'delete_specialpro' pro.pk %}" class="btn btn-delete"
+                   onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- Special Section -->
+<div id="special" class="section">
+    <h2>Table Name:- Special (રમત-ગમત / યુવક મહોત્સવ / એન.એસ.એસ. / સન્માન / પારિતોષિક)</h2>
+    <a href="{% url 'add_special' %}" class="add-button">Add વિશિષ્ટ સન્માન / પારિતોષિક</a>
+    <table>
+        <tr><th>Note</th><th>Displayed</th><th>Action</th></tr>
+        {% for special in specials %}
+        <tr>
+            <td>{{ special.note }}</td>
+            <td>{{ special.is_displayed }}</td>
+            <td class="actions">
+                <a href="{% url 'edit_special' special.pk %}" class="btn btn-edit">Edit</a>
+                <a href="{% url 'delete_special' special.pk %}" class="btn btn-delete"
+                   onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>

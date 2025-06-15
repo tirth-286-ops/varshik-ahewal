@@ -3,8 +3,306 @@ from django.http import HttpResponse
 from .models import NonTeachingStaff,TeachingStaff,PhDStudent,Department, Course,ExamResult,ResearchProjectInformation,Year
 from django.shortcuts import render
 from openpyxl.styles import Alignment, Font, Border, Side
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from .models import Course
+
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')  # redirect to your dashboard
+        else:
+            # return error message if authentication fails
+            return render(request, "login.html", {"login_error": "Wrong username or password"})
+    return render(request, "login.html")
 
 
+from django.contrib.auth.models import User
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import (
+    NonTeachingStaff, TeachingStaff, PhDStudent, Course, ExamResult,
+    TeacherInformation, TeacherPublicationInformation, ResearchProjectInformation,
+    SpecialNote, Specialpro, Special ,Year ,Department
+)
+from staff.form import (
+    NonTeachingStaffForm, TeachingStaffForm, PhDStudentForm, CourseForm,
+    ExamResultForm, TeacherInformationForm, TeacherPublicationInformationForm,
+    ResearchProjectInformationForm, SpecialNoteForm, SpecialproForm, SpecialForm,YearForm,DepartmentForm,UserCreationCustomForm,UserEditCustomForm 
+)
+
+# Dashboard 
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def dashboard(request):
+    user = request.user
+
+    if user.is_superuser:
+        # Show full dashboard
+        context = {
+            'years': Year.objects.all(),
+            'departments': Department.objects.all(),
+            'non_teaching_staff': NonTeachingStaff.objects.all(),
+            'teaching_staff': TeachingStaff.objects.all(),
+            'phd_students': PhDStudent.objects.all(),
+            'courses': Course.objects.all(),
+            'exam_results': ExamResult.objects.all(),
+            'teacher_info': TeacherInformation.objects.all(),
+            'teacher_publications': TeacherPublicationInformation.objects.all(),
+            'research_projects': ResearchProjectInformation.objects.all(),
+            'special_notes': SpecialNote.objects.all(),
+            'specialpros': Specialpro.objects.all(),
+            'specials': Special.objects.all(),
+             'users': User.objects.all(), 
+        }
+    elif user.is_staff:
+        # Show only the logged-in staff's related data
+        context = {
+            'teacher_info': TeacherInformation.objects.all(),
+            'teacher_publications': TeacherPublicationInformation.objects.all(),
+            'research_projects': ResearchProjectInformation.objects.all(),
+            'special_notes': SpecialNote.objects.all(),
+            'specialpros': Specialpro.objects.all(),
+            'specials': Special.objects.all(),
+        }
+        return render(request, 'staff_dashboard.html', context)
+    else:
+        # Regular users see only courses and exam results, or you can show a message
+        context = {
+           
+            # Or just an empty dict if you want to hide everything
+        }
+
+    return render(request, 'dashboard.html', context)
+
+
+def add_user(request):
+    if request.method == 'POST':
+        form = UserCreationCustomForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])  # Hash password
+            user.save()
+            messages.success(request, "User created successfully.")
+            return redirect('dashboard')
+    else:
+        form = UserCreationCustomForm()
+    return render(request, 'edit_form.html', {'form': form, 'is_add': True})
+
+
+@login_required
+def edit_user(request, user_id):
+    user_instance = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        form = UserEditCustomForm(request.POST, instance=user_instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "User updated successfully.")
+            return redirect('dashboard')
+    else:
+        form = UserEditCustomForm(instance=user_instance)
+    
+    context = {
+        'form': form,
+        'is_add': False,
+        'is_user_edit': True,
+        'user_to_edit': user_instance,
+    }
+    return render(request, 'edit_form.html', context)
+
+
+@login_required
+def delete_user(request, user_id):
+    user_instance = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        user_instance.delete()
+        messages.success(request, "User deleted successfully.")
+        return redirect('dashboard')
+    return render(request, 'confirm_delete.html', {'object': user_instance, 'type': 'User'})
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import AdminPasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def change_user_password(request, user_id):
+    user_instance = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        form = AdminPasswordChangeForm(user_instance, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Password updated successfully for {user_instance.username}.")
+            # Important: If the user is the current logged in user, update session hash to keep them logged in
+            if user_instance == request.user:
+                update_session_auth_hash(request, form.user)
+            return redirect('edit_user', user_id=user_instance.id)
+    else:
+        form = AdminPasswordChangeForm(user_instance)
+    return render(request, 'change_password.html', {'form': form, 'user_obj': user_instance})
+
+
+def add_year(request):
+    return handle_crud(request, YearForm, 'dashboard')
+
+def edit_year(request, pk):
+    return handle_crud(request, YearForm, 'dashboard', instance=get_object_or_404(Year, pk=pk))
+
+def delete_year(request, pk):
+    return delete_instance(request, Year, pk)
+
+def add_department(request):
+    return handle_crud(request, DepartmentForm, 'dashboard')
+
+def edit_department(request, pk):
+    return handle_crud(request, DepartmentForm, 'dashboard', instance=get_object_or_404(Department, pk=pk))
+
+def delete_department(request, pk):
+    return delete_instance(request, Department, pk)
+
+### NonTeachingStaff Views ###
+def add_non_teaching_staff(request):
+    return handle_crud(request, NonTeachingStaffForm, 'dashboard')
+
+def edit_non_teaching_staff(request, pk):
+    return handle_crud(request, NonTeachingStaffForm, 'dashboard', instance=get_object_or_404(NonTeachingStaff, pk=pk))
+
+def delete_non_teaching_staff(request, pk):
+    return delete_instance(request, NonTeachingStaff, pk)
+
+### TeachingStaff Views ###
+def add_teaching_staff(request):
+    return handle_crud(request, TeachingStaffForm, 'dashboard')
+
+def edit_teaching_staff(request, pk):
+    return handle_crud(request, TeachingStaffForm, 'dashboard', instance=get_object_or_404(TeachingStaff, pk=pk))
+
+def delete_teaching_staff(request, pk):
+    return delete_instance(request, TeachingStaff, pk)
+
+### PhDStudent Views ###
+def add_phd_student(request):
+    return handle_crud(request, PhDStudentForm, 'dashboard')
+
+def edit_phd_student(request, pk):
+    return handle_crud(request, PhDStudentForm, 'dashboard', instance=get_object_or_404(PhDStudent, pk=pk))
+
+def delete_phd_student(request, pk):
+    return delete_instance(request, PhDStudent, pk)
+
+### Course Views ###
+def add_course(request):
+    return handle_crud(request, CourseForm, 'dashboard')
+
+def edit_course(request, pk):
+    return handle_crud(request, CourseForm, 'dashboard', instance=get_object_or_404(Course, pk=pk))
+
+def delete_course(request, pk):
+    return delete_instance(request, Course, pk)
+
+### ExamResult Views ###
+def add_exam_result(request):
+    return handle_crud(request, ExamResultForm, 'dashboard')
+
+def edit_exam_result(request, pk):
+    return handle_crud(request, ExamResultForm, 'dashboard', instance=get_object_or_404(ExamResult, pk=pk))
+
+def delete_exam_result(request, pk):
+    return delete_instance(request, ExamResult, pk)
+
+### TeacherInformation Views ###
+def add_teacher_information(request):
+    return handle_crud(request, TeacherInformationForm, 'dashboard')
+
+def edit_teacher_information(request, pk):
+    return handle_crud(request, TeacherInformationForm, 'dashboard', instance=get_object_or_404(TeacherInformation, pk=pk))
+
+def delete_teacher_information(request, pk):
+    return delete_instance(request, TeacherInformation, pk)
+
+### TeacherPublicationInformation Views ###
+def add_teacher_publication(request):
+    return handle_crud(request, TeacherPublicationInformationForm, 'dashboard')
+
+def edit_teacher_publication(request, pk):
+    return handle_crud(request, TeacherPublicationInformationForm, 'dashboard', instance=get_object_or_404(TeacherPublicationInformation, pk=pk))
+
+def delete_teacher_publication(request, pk):
+    return delete_instance(request, TeacherPublicationInformation, pk)
+
+### ResearchProjectInformation Views ###
+def add_research_project(request):
+    return handle_crud(request, ResearchProjectInformationForm, 'dashboard')
+
+def edit_research_project(request, pk):
+    return handle_crud(request, ResearchProjectInformationForm, 'dashboard', instance=get_object_or_404(ResearchProjectInformation, pk=pk))
+
+def delete_research_project(request, pk):
+    return delete_instance(request, ResearchProjectInformation, pk)
+
+### SpecialNote Views ###
+def add_special_note(request):
+    return handle_crud(request, SpecialNoteForm, 'dashboard')
+
+def edit_special_note(request, pk):
+    return handle_crud(request, SpecialNoteForm, 'dashboard', instance=get_object_or_404(SpecialNote, pk=pk))
+
+def delete_special_note(request, pk):
+    return delete_instance(request, SpecialNote, pk)
+
+### Specialpro Views ###
+def add_specialpro(request):
+    return handle_crud(request, SpecialproForm, 'dashboard')
+
+def edit_specialpro(request, pk):
+    return handle_crud(request, SpecialproForm, 'dashboard', instance=get_object_or_404(Specialpro, pk=pk))
+
+def delete_specialpro(request, pk):
+    return delete_instance(request, Specialpro, pk)
+
+### Special Views ###
+def add_special(request):
+    return handle_crud(request, SpecialForm, 'dashboard')
+
+def edit_special(request, pk):
+    return handle_crud(request, SpecialForm, 'dashboard', instance=get_object_or_404(Special, pk=pk))
+
+def delete_special(request, pk):
+    return delete_instance(request, Special, pk)
+
+### Common Utility Views ###
+def handle_crud(request, form_class, redirect_url, instance=None):
+    if request.method == 'POST':
+        form = form_class(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Saved successfully.')
+            return redirect(redirect_url)
+    else:
+        form = form_class(instance=instance)
+    return render(request, 'edit_form.html', {'form': form, 'is_add': instance is None})
+
+def delete_instance(request, model_class, pk):
+    instance = get_object_or_404(model_class, pk=pk)
+    instance.delete()
+    messages.success(request, 'Deleted successfully.')
+    return redirect('dashboard')
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+# Similar views for other models like TeachingStaff, PhDStudent, etc.
 def year_selection(request):
     years = Year.objects.all()  # Fetch all years
     return render(request, 'year_selection.html', {'years': years})

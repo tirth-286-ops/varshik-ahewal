@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        .navbar {
+            background-color: #007b9e;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .project-name {
+            font-size: 20px;
+            font-weight: bolder;
+        }
+        .back-button {
+            background: linear-gradient(135deg, #7ebbc5 0%, #ffffff 100%);
+            padding: 8px 12px;
+            text-decoration: none;
+            font-size: 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #e6e6e6;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #7ebbc5 0%, #ffffff 100%);
+            padding: 20px;
+        }
+        form {
+            background: linear-gradient(135deg, #7ebbc5 0%, #ffffff 100%);
+            padding: 20px;
+            margin: 0 auto;
+            width: 50%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-decoration: solid;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #2194a9;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color:#7ebbc5;
+        }
+        .back-btn {
+            display: block;
+            margin: 15px auto 0;
+            text-align: center;
+        }
+        .password-section {
+            margin-top: 25px;
+            background-color: #dbe9f4;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .password-section a {
+            color: #007b9e;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        .password-section a:hover {
+            text-decoration: underline;
+        }
+        .form-buttons {
+        display: flex;
+        justify-content: flex-start; /* align left by default */
+        align-items: center;
+        gap: 15px; /* space between buttons */
+        margin-top: 20px;
+    }
+
+    .change-password-btn {
+        padding: 10px 20px;
+        background-color: transparent;
+        border: 2px solid #2194a9;
+        color: #2194a9;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        white-space: nowrap;
+    }
+
+    .change-password-btn:hover {
+        background-color: #2194a9;
+        color: white;
+    }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="project-name">Application Of Varshik Ahewal</div>
+  <a href="{% url 'dashboard' %}" class="back-button">Back to Dashboard</a>
+</div>
+<form method="POST" style="max-width: 600px; margin: auto;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-buttons">
+        <button type="submit">{% if is_add %}Add{% else %}Save changes{% endif %}</button>
+
+        {% if is_user_edit and not is_add %}
+        <a href="{% url 'change_user_password' form.instance.id %}" class="change-password-btn">Change Password</a>
+        {% endif %}
+    </div>
+</form>
+

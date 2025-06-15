@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Staff Data</title>
   <style>
+      body {
+           
+             background: linear-gradient(135deg, #7ebbc5 0%, #ffffff 100%);
+        }
     table {
       border-collapse: collapse;
       width: 100%;
@@ -16,7 +20,8 @@
       text-align: center;
     }
     th {
-      background-color: #f2f2f2;
+                  background: linear-gradient(135deg, #7ebbc5 0%, #ffffff 100%);
+
     }
     td {
       padding-top: 10px;
@@ -34,7 +39,7 @@
       padding: 8px 10px;
       font-size: 11px;
       cursor: pointer;
-      background-color: rgb(33, 191, 211);
+      background-color: rgb(44, 173, 190);
       color: white;
       border: none;
       border-radius: 5px;
@@ -45,16 +50,52 @@
     select {
       padding: 5px;
       font-size: 11px;
+             background: linear-gradient(135deg, #7ebbc5 0%, #ffffff 100%);
+
     }
     .year-selection {
       display: flex;
       justify-content: center;
       margin-bottom: 20px;
     }
+    .navbar {
+  background-color: #007b9e; /* navbar background */
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.project-name {
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+.back-button {
+              background: linear-gradient(135deg, #7ebbc5 0%, #ffffff 100%);
+
+  padding: 8px 12px;
+  text-decoration: none;
+  font-size: 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: #e6e6e6;
+}
+
   </style>
 </head>
 <body>
-
+<div class="navbar">
+  <div class="project-name">Application Of Varshik Ahewal</div>
+  <a href="{% url 'dashboard' %}" class="back-button">Back to Dashboard</a>
+</div>
   <!-- Year Selection Form -->
   <div class="year-selection">
     <form method="get">

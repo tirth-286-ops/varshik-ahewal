@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Year(models.Model):
     year = models.CharField(max_length=255,null=True)
@@ -164,6 +165,7 @@ class ExamResult(models.Model):
     
 
 class TeacherInformation(models.Model):
+
     year = models.ForeignKey(Year, on_delete=models.CASCADE, null=True)
     teacher_name = models.CharField(max_length=255)
     conference = models.CharField(max_length=255)
@@ -174,6 +176,7 @@ class TeacherInformation(models.Model):
         return self.teacher_name
     
 class TeacherPublicationInformation(models.Model):
+ 
     year = models.ForeignKey(Year, on_delete=models.CASCADE, null=True)
     serial_number = models.IntegerField()
     teacher_name = models.CharField(max_length=255)  # English field name
@@ -182,7 +185,9 @@ class TeacherPublicationInformation(models.Model):
 
     def __str__(self):
         return f'{self.teacher_name} - {self.publication_title}' 
+    
 class ResearchProjectInformation(models.Model):
+   
     year = models.ForeignKey(Year, on_delete=models.CASCADE, null=True)
     serial_number = models.IntegerField()  # Serial Number
     teacher_name = models.CharField(max_length=255)  # Teacher's Name
@@ -194,6 +199,7 @@ class ResearchProjectInformation(models.Model):
         return f"{self.serial_number} - {self.teacher_name} - {self.research_project_title}"
 
 class SpecialNote(models.Model):
+
     year = models.ForeignKey(Year, on_delete=models.CASCADE,null=True)
     note = models.TextField(help_text="Enter the special note text")
     is_displayed = models.BooleanField(default=False, help_text="Check to display the note in the document")
@@ -206,6 +212,7 @@ class SpecialNote(models.Model):
         verbose_name_plural = 'વિશેષ નોંધ'
 
 class Specialpro(models.Model):
+  
     year = models.ForeignKey(Year, on_delete=models.CASCADE,null=True)
     note = models.TextField(help_text="Enter the special note text")
     is_displayed = models.BooleanField(default=False, help_text="Check to display the note in the document")

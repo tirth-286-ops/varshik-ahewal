@@ -1,0 +1,72 @@
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #7ebbc5 0%, #ffffff 100%);
+    padding: 20px;
+    color: #333;
+  }
+
+  h2 {
+    text-align: center;
+    color: #c0392b; /* red-ish for delete warning */
+    margin-bottom: 20px;
+  }
+
+  p {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+  }
+
+  strong {
+    color: #7b241c; /* darker red for emphasis */
+  }
+
+  form {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  button {
+    background-color: #c0392b;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 15px;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #e74c3c;
+  }
+
+  a {
+    display: inline-block;
+    padding: 12px 25px;
+    font-size: 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #007b9e;
+    background: linear-gradient(135deg, #7ebbc5 0%, #ffffff 100%);
+    border: 1px solid #007b9e;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  a:hover {
+    background-color: #007b9e;
+    color: white;
+  }
+</style>
+
+<h2>Confirm Delete</h2>
+<p>Are you sure you want to delete this {{ type }}: <strong>{{ object.username }}</strong>?</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Yes, Delete</button>
+  <a href="{% url 'dashboard' %}">Cancel</a>
+</form>
